@@ -14,6 +14,10 @@
   <name>Guvnor REST Service</name>
   <description>Guvnor REST Service</description>
 
+  <properties>
+    <version.org.apache.deltaspike>0.6</version.org.apache.deltaspike>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
@@ -41,11 +45,6 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-bus</artifactId>
     </dependency>
@@ -64,7 +63,23 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
     </dependency>
-    
+   
+    <!--  java --> 
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.spec.javax.ejb</groupId>
+      <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+    </dependency> 
+    <!--  For the BeanManagerProvider class -->
+    <dependency>
+      <groupId>org.apache.deltaspike.core</groupId>
+      <artifactId>deltaspike-core-api</artifactId> 
+      <version>${version.org.apache.deltaspike}</version>
+   </dependency>
+
     <!-- for test? -->
     <dependency>
       <groupId>org.guvnor</groupId>
@@ -116,8 +131,7 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jackson-provider</artifactId>
     </dependency>
-    
-    
+   
     <!-- Weld Modules. For tests only -->
     <dependency>
       <groupId>org.jboss.weld</groupId>
@@ -130,14 +144,6 @@
       <artifactId>weld-se-core</artifactId>
       <scope>test</scope>
     </dependency>
-
-<!--<dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-datamodel-backend</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
-    
   </dependencies>
 
 </project>

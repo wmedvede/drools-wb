@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * Service class to approve requests for jobs
  */
 
+@ApplicationScoped
 public class JobRequestApprovalService {
 
     private static final Logger logger = LoggerFactory.getLogger( JobRequestApprovalService.class );

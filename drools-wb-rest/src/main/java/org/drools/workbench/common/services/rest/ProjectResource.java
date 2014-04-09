@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -42,27 +43,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.drools.workbench.common.services.rest.async.JobRequestExecutor;
 import org.guvnor.common.services.project.builder.service.BuildService;
 import org.guvnor.common.services.project.service.ProjectService;
 import org.jboss.resteasy.annotations.GZIP;
-import org.kie.workbench.common.services.shared.rest.AddRepositoryToOrganizationalUnitRequest;
-import org.kie.workbench.common.services.shared.rest.BuildConfig;
-import org.kie.workbench.common.services.shared.rest.CompileProjectRequest;
-import org.kie.workbench.common.services.shared.rest.CreateOrCloneRepositoryRequest;
-import org.kie.workbench.common.services.shared.rest.CreateOrganizationalUnitRequest;
-import org.kie.workbench.common.services.shared.rest.CreateProjectRequest;
-import org.kie.workbench.common.services.shared.rest.DeployProjectRequest;
-import org.kie.workbench.common.services.shared.rest.Entity;
-import org.kie.workbench.common.services.shared.rest.InstallProjectRequest;
-import org.kie.workbench.common.services.shared.rest.JobRequest;
-import org.kie.workbench.common.services.shared.rest.JobResult;
-import org.kie.workbench.common.services.shared.rest.JobStatus;
-import org.kie.workbench.common.services.shared.rest.OrganizationalUnit;
-import org.kie.workbench.common.services.shared.rest.RemoveRepositoryFromOrganizationalUnitRequest;
-import org.kie.workbench.common.services.shared.rest.RemoveRepositoryRequest;
-import org.kie.workbench.common.services.shared.rest.RepositoryRequest;
-import org.kie.workbench.common.services.shared.rest.RepositoryResponse;
-import org.kie.workbench.common.services.shared.rest.TestProjectRequest;
+import org.kie.workbench.common.services.shared.rest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.organizationalunit.OrganizationalUnitService;
@@ -80,7 +65,7 @@ import org.uberfire.java.nio.file.FileSystem;
 @ApplicationScoped
 public class ProjectResource {
 
-    private static final Logger logger = LoggerFactory.getLogger( JobRequestHelper.class );
+    private static final Logger logger = LoggerFactory.getLogger( ProjectResource.class );
 
     @Context
     protected UriInfo uriInfo;
@@ -104,95 +89,25 @@ public class ProjectResource {
     @Inject
     RepositoryService repositoryService;
 
-    private static class Cache extends LinkedHashMap<String, JobResult> {
-
-        private int maxSize = 1000;
-
-        public Cache( int maxSize ) {
-            this.maxSize = maxSize;
-        }
-
-        @Override
-        protected boolean removeEldestEntry( Map.Entry<String, JobResult> stringFutureEntry ) {
-            return size() > maxSize;
-        }
-
-        public void setMaxSize( int maxSize ) {
-            this.maxSize = maxSize;
-        }
-    }
-
-    private Cache cache;
-    private Map<String, JobResult> jobs;
     private AtomicLong counter = new AtomicLong( 0 );
 
-    private int maxCacheSize = 10000;
-
     @Inject
-    private Event<CreateOrCloneRepositoryRequest> createOrCloneJobRequestEvent;
-
-    @Inject
-    private Event<RemoveRepositoryRequest> removeRepositoryRequestEvent;
-
-    @Inject
-    private Event<CreateProjectRequest> createProjectRequestEvent;
-
-    @Inject
-    private Event<CompileProjectRequest> compileProjectRequestEvent;
-
-    @Inject
-    private Event<InstallProjectRequest> installProjectRequestEvent;
-
-    @Inject
-    private Event<TestProjectRequest> testProjectRequestEvent;
-
-    @Inject
-    private Event<DeployProjectRequest> deployProjectRequestEvent;
-
-    @Inject
-    private Event<CreateOrganizationalUnitRequest> createOrganizationalUnitRequestEvent;
-
-    @Inject
-    private Event<AddRepositoryToOrganizationalUnitRequest> addRepositoryToOrganizationalUnitRequest;
-
-    @Inject
-    private Event<RemoveRepositoryFromOrganizationalUnitRequest> removeRepositoryFromOrganizationalUnitRequest;
-
-    @PostConstruct
-    public void start() {
-        cache = new Cache( maxCacheSize );
-        jobs = Collections.synchronizedMap( cache );
-    }
-
-    public void onUpateJobStatus( final @Observes JobResult jobResult ) {
-        String jobId = jobResult.getJobId();
-        JobResult job = jobs.get( jobId );
-
-        if ( job == null ) {
-            //the job has gone probably because its done and has been removed.
-            logger.info( "-----onUpateJobStatus--- , can not find jobId:" + jobId + ", the job has gone probably because its done and has been removed." );
-            return;
-        }
-
-        jobResult.setLastModified( System.currentTimeMillis() );
-        jobs.put( jobId, jobResult );
-    }
-
+    private JobRequestExecutor jobRequestExecutor;
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/jobs/{jobId}")
     public JobResult getJobStatus( @PathParam("jobId") String jobId ) {
-        logger.info( "-----getJobStatus--- , jobId:" + jobId );
-
-        JobResult job = jobs.get( jobId );
-
+        JobResult job = jobRequestExecutor.getJobResult(jobId);
+        
         if ( job == null ) {
             //the job has gone probably because its done and has been removed.
-            logger.info( "-----getJobStatus--- , can not find jobId:" + jobId + ", the job has gone probably because its done and has been removed." );
+            logger.info( "-----getJobStatus--- , can not find jobId:" + jobId );
             job = new JobResult();
             job.setStatus( JobStatus.GONE );
             return job;
         }
+        logger.info( "-----getJobStatus--- , jobId:" + jobId );
 
         return job;
     }
@@ -201,20 +116,18 @@ public class ProjectResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/jobs/{jobId}")
     public JobResult removeJob( @PathParam("jobId") String jobId ) {
-        logger.info( "-----removeJob--- , jobId:" + jobId );
-
-        JobResult job = jobs.get( jobId );
+        JobResult job = jobRequestExecutor.removeJobResult(jobId);
 
         if ( job == null ) {
             //the job has gone probably because its done and has been removed.
-            logger.info( "-----removeJob--- , can not find jobId:" + jobId + ", the job has gone probably because its done and has been removed." );
+            logger.info( "-----removeJob--- , can not find jobId:" + jobId );
             job = new JobResult();
             job.setStatus( JobStatus.GONE );
             return job;
         }
-
-        jobs.remove( jobId );
+        logger.info( "-----removeJob--- , jobId:" + jobId );
         job.setStatus( JobStatus.GONE );
+        
         return job;
     }
 
@@ -244,43 +157,33 @@ public class ProjectResource {
     public JobRequest createOrCloneRepository( RepositoryRequest repository ) {
         logger.info( "-----createOrCloneRepository--- , repository name:" + repository.getName() );
 
+        // submit job
         String id = "" + System.currentTimeMillis() + "-" + counter.incrementAndGet();
         CreateOrCloneRepositoryRequest jobRequest = new CreateOrCloneRepositoryRequest();
         jobRequest.setStatus( JobStatus.ACCEPTED );
         jobRequest.setJobId( id );
         jobRequest.setRepository( repository );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        createOrCloneJobRequestEvent.fire( jobRequest );
-
+        jobRequestExecutor.createOrCloneRepository(jobRequest);
+        
         return jobRequest;
     }
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/repositories/{repositoryName}")
-    public JobRequest removeRepository(
-            @PathParam("repositoryName") String repositoryName ) {
+    public JobRequest removeRepository(@PathParam("repositoryName") String repositoryName ) {
         logger.info( "-----removeRepository--- , repositoryName:" + repositoryName );
 
+        // submit job
         String id = "" + System.currentTimeMillis() + "-" + counter.incrementAndGet();
-
         RemoveRepositoryRequest jobRequest = new RemoveRepositoryRequest();
         jobRequest.setStatus( JobStatus.ACCEPTED );
         jobRequest.setJobId( id );
         jobRequest.setRepositoryName( repositoryName );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        removeRepositoryRequestEvent.fire( jobRequest );
-
+        jobRequestExecutor.removeRepository(jobRequest);
+        
         return jobRequest;
     }
 
@@ -288,11 +191,10 @@ public class ProjectResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/repositories/{repositoryName}/projects")
-    public JobRequest createProject(
-            @PathParam("repositoryName") String repositoryName,
-            Entity project ) {
+    public JobRequest createProject(@PathParam("repositoryName") String repositoryName, Entity project) {
         logger.info( "-----createProject--- , repositoryName:" + repositoryName + ", project name:" + project.getName() );
 
+        // submit job
         String id = "" + System.currentTimeMillis() + "-" + counter.incrementAndGet();
         CreateProjectRequest jobRequest = new CreateProjectRequest();
         jobRequest.setStatus( JobStatus.ACCEPTED );
@@ -301,13 +203,8 @@ public class ProjectResource {
         jobRequest.setProjectName( project.getName() );
         jobRequest.setDescription( project.getDescription() );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        createProjectRequestEvent.fire( jobRequest );
-
+        jobRequestExecutor.createProject(jobRequest);
+       
         return jobRequest;
     }
 
@@ -343,11 +240,10 @@ public class ProjectResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/repositories/{repositoryName}/projects/{projectName}/maven/compile")
-    public JobRequest compileProject(
-            @PathParam("repositoryName") String repositoryName,
-            @PathParam("projectName") String projectName ) {
+    public JobRequest compileProject(@PathParam("repositoryName") String repositoryName, @PathParam("projectName") String projectName) {
         logger.info( "-----compileProject--- , repositoryName:" + repositoryName + ", project name:" + projectName );
 
+        // submit job
         String id = "" + System.currentTimeMillis() + "-" + counter.incrementAndGet();
         CompileProjectRequest jobRequest = new CompileProjectRequest();
         jobRequest.setStatus( JobStatus.ACCEPTED );
@@ -355,13 +251,8 @@ public class ProjectResource {
         jobRequest.setRepositoryName( repositoryName );
         jobRequest.setProjectName( projectName );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        compileProjectRequestEvent.fire( jobRequest );
-
+        jobRequestExecutor.compileProject(jobRequest);
+       
         return jobRequest;
     }
 
@@ -380,12 +271,7 @@ public class ProjectResource {
         jobRequest.setRepositoryName( repositoryName );
         jobRequest.setProjectName( projectName );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        installProjectRequestEvent.fire( jobRequest );
+        jobRequestExecutor.installProject(jobRequest);
 
         return jobRequest;
     }
@@ -408,12 +294,7 @@ public class ProjectResource {
         jobRequest.setProjectName( projectName );
         jobRequest.setBuildConfig( mavenConfig );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        testProjectRequestEvent.fire( jobRequest );
+        jobRequestExecutor.testProject(jobRequest);
 
         return jobRequest;
     }
@@ -433,13 +314,8 @@ public class ProjectResource {
         jobRequest.setRepositoryName( repositoryName );
         jobRequest.setProjectName( projectName );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        deployProjectRequestEvent.fire( jobRequest );
-
+        jobRequestExecutor.deployProject(jobRequest);
+        
         return jobRequest;
     }
 
@@ -483,13 +359,8 @@ public class ProjectResource {
         jobRequest.setOwner( organizationalUnit.getOwner() );
         jobRequest.setRepositories( organizationalUnit.getRepositories() );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        createOrganizationalUnitRequestEvent.fire( jobRequest );
-
+        jobRequestExecutor.createOrganizationalUnit(jobRequest);
+        
         return jobRequest;
     }
 
@@ -507,13 +378,8 @@ public class ProjectResource {
         jobRequest.setOrganizationalUnitName( organizationalUnitName );
         jobRequest.setRepositoryName( repositoryName );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        addRepositoryToOrganizationalUnitRequest.fire( jobRequest );
-
+        jobRequestExecutor.addRepositoryToOrganizationalUnit(jobRequest);
+        
         return jobRequest;
     }
 
@@ -531,13 +397,8 @@ public class ProjectResource {
         jobRequest.setOrganizationalUnitName( organizationalUnitName );
         jobRequest.setRepositoryName( repositoryName );
 
-        JobResult jobResult = new JobResult();
-        jobResult.setJobId( id );
-        jobResult.setStatus( JobStatus.ACCEPTED );
-        jobs.put( id, jobResult );
-
-        removeRepositoryFromOrganizationalUnitRequest.fire( jobRequest );
-
+        jobRequestExecutor.removeRepositoryFromOrganizationalUnit(jobRequest);
+        
         return jobRequest;
     }
 
@@ -594,8 +455,3 @@ public class ProjectResource {
         return repositoryRootPath;
     }
 }
-
-
-
-
-
