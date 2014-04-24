@@ -23,25 +23,51 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-rest-defaultapprover</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
+    </dependency>
+  
+    <!-- guvnor --> 
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-project-backend</artifactId>
+    </dependency>  
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-project-builder</artifactId>
+    </dependency>        
     
+    <!-- kie-wb-common --> 
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
       <artifactId>kie-wb-common-services-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-services-backend</artifactId>
+    </dependency>
 
+    <!-- uberfire --> 
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-backend-server</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-io</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-jgit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-fs</artifactId>
     </dependency>
 
     <dependency>
@@ -49,21 +75,8 @@
       <artifactId>errai-bus</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-core</artifactId>
-    </dependency>
 
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-project-backend</artifactId>
-    </dependency>  
-
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
-    </dependency>
-   
+    
     <!--  java --> 
     <dependency>
       <groupId>javax.enterprise</groupId>
@@ -80,30 +93,6 @@
       <version>${version.org.apache.deltaspike}</version>
    </dependency>
 
-    <!-- for test? -->
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-m2repo-editor-backend</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-services-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-project-builder</artifactId>
-    </dependency>        
-    
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-nio2-jgit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-nio2-fs</artifactId>
-    </dependency>
-    
     <!-- REST dependencies -->
     <dependency>
       <groupId>javax.ws.rs</groupId>
@@ -126,23 +115,9 @@
       <artifactId>resteasy-multipart-provider</artifactId>
     </dependency>
     
-    <!-- The jackson version included by RESTEasy is way too old -->
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jackson-provider</artifactId>
-    </dependency>
-   
-    <!-- Weld Modules. For tests only -->
-    <dependency>
-      <groupId>org.jboss.weld</groupId>
-      <artifactId>weld-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.weld.se</groupId>
-      <artifactId>weld-se-core</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
