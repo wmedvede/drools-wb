@@ -47,6 +47,8 @@ public class AuthoringWorkbenchDocks {
 
     private DataModelerContext lastActiveContext;
 
+    private UberfireDock datasourceExplorerDock;
+
     public void perspectiveChangeEvent( @Observes UberfireDockReadyEvent dockReadyEvent ) {
         if ( authoringPerspectiveIdentifier != null && dockReadyEvent.getCurrentPerspective().equals( authoringPerspectiveIdentifier ) ) {
             if ( projectExplorerDock != null ) {
@@ -58,6 +60,8 @@ public class AuthoringWorkbenchDocks {
     public void setup( String authoringPerspectiveIdentifier, PlaceRequest projectExplorerPlaceRequest ) {
         this.authoringPerspectiveIdentifier = authoringPerspectiveIdentifier;
         projectExplorerDock = new UberfireDock( UberfireDockPosition.WEST, "ADJUST", projectExplorerPlaceRequest, authoringPerspectiveIdentifier ).withSize( 400 ).withLabel( "Project Explorer" );
+        datasourceExplorerDock = new UberfireDock( UberfireDockPosition.WEST, "DATABASE", new DefaultPlaceRequest( "DataSourceDefExplorer" ), authoringPerspectiveIdentifier ).withSize( 400 ).withLabel( "DataSource Explorer" );
+
         uberfireDocks.add(
                 projectExplorerDock,
                 new UberfireDock( UberfireDockPosition.EAST, "RANDOM", new DefaultPlaceRequest( "DroolsDomainScreen" ), authoringPerspectiveIdentifier ).withSize( 450 ).withLabel( "Drools & jBPM" ),
