@@ -39,8 +39,8 @@
   <inherits name="org.kie.workbench.common.screens.examples.KieWorkbenchCommonExamplesClient"/>
 
   <!-- Data sources management -->
-  <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDatasourceAPI" />
-  <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDatasourceClient" />
+  <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDataSourceAPI" />
+  <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDataSourceClient" />
 
 
   <!-- Common Services -->
