@@ -928,7 +928,8 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <extraJvmArgs>-Xmx3G -Xms1024m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.uberfire.async.executor.safemode=true -Djboss.server.config.dir=/home/wmedvede/development/jboss/wildfly-8.1.0.Final/standalone/configuration</extraJvmArgs>
+          <extraJvmArgs>-Xmx3G -Xms1024m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.uberfire.async.executor.safemode=true -Djboss.server.config.dir=/home/wmedvede/development/jboss/wildfly-8.1.0.Final/standalone/configuration -DdisableClose=true</extraJvmArgs>
+          <!--extraJvmArgs>-Xmx3G -Xms1024m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.uberfire.async.executor.safemode=true </extraJvmArgs-->
           <module>org.drools.workbench.DroolsWorkbench</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
