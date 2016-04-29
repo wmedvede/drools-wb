@@ -34,7 +34,7 @@
 
   <properties>
     <errai.version>${version.org.jboss.errai}</errai.version>
-    <as.version>8.1.0.Final</as.version>
+    <as.version>8.2.0.Final</as.version>
     <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
     <errai.jboss.home>${project.build.directory}/wildfly-${as.version}</errai.jboss.home>
   </properties>
@@ -520,20 +520,21 @@
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-datasource-mgmt-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-datasource-mgmt-client</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-datasource-mgmt-backend</artifactId>
     </dependency>
 
-    <!-- TODO Check if this dep shoud be added -->
-    <!--<dependency>-->
-      <!--<groupId>org.jboss.as</groupId>-->
-      <!--<artifactId>jboss-as-controller-client</artifactId>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-wildfly</artifactId>
+    </dependency>
 
     <!-- Drools Workbench REST -->
     <dependency>
@@ -928,7 +929,7 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <extraJvmArgs>-Xmx3G -Xms1024m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.uberfire.async.executor.safemode=true -Djboss.server.config.dir=/home/wmedvede/development/jboss/wildfly-8.1.0.Final/standalone/configuration</extraJvmArgs>
+          <extraJvmArgs>-Xmx3G -Xms1024m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.uberfire.async.executor.safemode=true -Djboss.server.config.dir=/home/wmedvede/development/jboss/wildfly-8.2.0.Final/standalone/configuration -DdisableClose=true</extraJvmArgs>
           <module>org.drools.workbench.DroolsWorkbench</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
