@@ -536,6 +536,22 @@
       <artifactId>kie-wb-common-datasource-mgmt-wildfly</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-dbcp</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-application-initializer</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <!--version>1.4.191</version-->
+    </dependency>
+
     <!-- Drools Workbench REST -->
     <dependency>
       <groupId>org.guvnor</groupId>
@@ -929,7 +945,8 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <extraJvmArgs>-Xmx3G -Xms1024m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.uberfire.async.executor.safemode=true -Djboss.server.config.dir=/home/wmedvede/development/jboss/wildfly-8.2.0.Final/standalone/configuration -DdisableClose=true</extraJvmArgs>
+          <!--<extraJvmArgs>-Xmx3G -Xms1024m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.uberfire.async.executor.safemode=true -Djboss.server.config.dir=/home/wmedvede/development/jboss/wildfly-8.2.0.Final/standalone/configuration -DdisableClose=true</extraJvmArgs>-->
+          <extraJvmArgs>-Xmx3G -Xms1024m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.uberfire.async.executor.safemode=true -DdisableClose=true</extraJvmArgs>
           <module>org.drools.workbench.DroolsWorkbench</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
