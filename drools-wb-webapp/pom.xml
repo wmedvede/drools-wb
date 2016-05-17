@@ -546,11 +546,11 @@
       <artifactId>kie-wb-common-datasource-mgmt-application-initializer</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <!--version>1.4.191</version-->
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.h2database</groupId>-->
+      <!--<artifactId>h2</artifactId>-->
+      <!--&lt;!&ndash;version>1.4.191</version&ndash;&gt;-->
+    <!--</dependency>-->
 
     <!-- Drools Workbench REST -->
     <dependency>

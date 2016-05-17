@@ -23,6 +23,11 @@
     <!--<jta-data-source>java:jboss/datasources/LiveSparkDS</jta-data-source>-->
     <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
 
+    <!-- None of this jar-file referencing works in a .war file. The spec is for ear files -->
+    <!--<jar-file>../../lib/kie-wb-common-datasource-mgmt-application-initializer-7.0.0-SNAPSHOT.jar</jar-file>-->
+    <!--<jar-file>lib/kie-wb-common-datasource-mgmt-application-initializer-7.0.0-SNAPSHOT.jar</jar-file>-->
+    <!--<jar-file>kie-wb-common-datasource-mgmt-application-initializer-7.0.0-SNAPSHOT.jar</jar-file>-->
+
     <class>org.kie.workbench.integration.Employee</class>
 
     <properties>
@@ -36,6 +41,7 @@
       <property name="hibernate.id.new_generator_mappings" value="false" />
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
     </properties>
+
   </persistence-unit>
 
 </persistence>

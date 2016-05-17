@@ -1,0 +1,12 @@
+{
+  "uuid": "6407ecaa-ebc3-49da-869e-c2099515447b",
+  "name": "DS1",
+  "jndi": "java:jboss/datasources/DS1",
+  "connectionURL": "jdbc:h2:mem:DS1;DB_CLOSE_DELAY\u003d-1;DB_CLOSE_ON_EXIT\u003dFALSE",
+  "driverClass": "org.h2.Driver",
+  "driverUuid": "h2",
+  "user": "sa",
+  "password": "sa",
+  "useJTA": false,
+  "useCCM": false
+}
