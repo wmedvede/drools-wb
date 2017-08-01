@@ -469,6 +469,16 @@
       <artifactId>guvnor-ala-services-rest</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-ala-provisioning-pipelines-openshift</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-ala-provisioning-pipelines-wildfly</artifactId>
+    </dependency>
+
     <!-- Common -->
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
@@ -486,12 +496,6 @@
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
       <artifactId>kie-wb-common-services-backend</artifactId>
-      <exclusions>
-       <exclusion>
-         <groupId>org.guvnor</groupId>
-         <artifactId>guvnor-ala-registry-local</artifactId>
-       </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
